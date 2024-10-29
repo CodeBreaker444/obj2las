@@ -18,7 +18,7 @@ void LAS13Writer::initializeHeader() {
     std::memset(&header, 0, sizeof(LASHeader));
     std::memcpy(header.fileSignature, "LASF", 4);
     header.versionMajor = 1;
-    header.versionMinor = 2;
+    header.versionMinor = 3;
     header.headerSize = 235;
     header.offsetToPointData = 235;
     header.pointDataRecordFormat = 3;
@@ -29,6 +29,7 @@ void LAS13Writer::initializeHeader() {
     header.xOffset = 0;
     header.yOffset = 0;
     header.zOffset = 0;
+    
     
     // Initialize bounding box to invalid values
     header.minX = header.minY = header.minZ = std::numeric_limits<double>::max();
