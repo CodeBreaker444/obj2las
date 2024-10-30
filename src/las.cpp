@@ -18,7 +18,7 @@ void LAS13Writer::initializeHeader() {
     std::memset(&header, 0, sizeof(LASHeader));
     std::memcpy(header.fileSignature, "LASF", 4);
     header.versionMajor = 1;
-    header.versionMinor = 2;
+    header.versionMinor = 3;
     header.headerSize = 235;
     header.offsetToPointData = 235;
     header.pointDataRecordFormat = 3;
