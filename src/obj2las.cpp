@@ -27,7 +27,8 @@
 #include <cfloat>
 #include <fstream>
 #include <iomanip>
-#define VERSION "1.0.0"
+#define VERSION "1.0.0a"
+
 struct GlobalToLocalTransform {
     double global_x_offset = 0.0;
     double global_y_offset = 0.0;
@@ -46,89 +47,63 @@ struct GlobalToLocalTransform {
     }
 };
 
-// GlobalToLocalTransform computeGlobalToLocalTransform(const tinyobj::attrib_t& attrib) {
-//     GlobalToLocalTransform transform;
-    
-//     double min_x = DBL_MAX, max_x = -DBL_MAX;
-//     double min_y = DBL_MAX, max_y = -DBL_MAX;
-//     double min_z = DBL_MAX, max_z = -DBL_MAX;
-    
-//     for (size_t v = 0; v < attrib.vertices.size(); v += 3) {
-//         double x = attrib.vertices[v];
-//         double y = attrib.vertices[v + 1];
-//         double z = attrib.vertices[v + 2];
-//         // std::cout << "computeglobal: x: " << x << " y: " << y << " z: " << z << std::endl;
-        
-//         min_x = std::min(min_x, x);
-//         max_x = std::max(max_x, x);
-//         min_y = std::min(min_y, y);
-//         max_y = std::max(max_y, y);
-//         min_z = std::min(min_z, z);
-//         max_z = std::max(max_z, z);
-//     }
-
-//     transform.global_x_offset = -std::round(min_x / 1000.0) * 1000.0;
-//     transform.global_y_offset = -std::round(min_y / 1000.0) * 1000.0;
-//     transform.global_z_offset = 0.0;
-//     transform.needs_transform = true;
-
-
-//     std::cout << "\nCoordinate Analysis:" << std::endl;
-//     std::cout << std::fixed << std::setprecision(6);
-//     std::cout << "Original bounds:" << std::endl;
-//     std::cout << "X: " << min_x << " to " << max_x << std::endl;
-//     std::cout << "Y: " << min_y << " to " << max_y << std::endl;
-//     std::cout << "Z: " << min_z << " to " << max_z << std::endl;
-//     std::cout << "\nComputed shifts:" << std::endl;
-//     std::cout << "X shift: " << transform.global_x_offset << std::endl;
-//     std::cout << "Y shift: " << transform.global_y_offset << std::endl;
-//     std::cout << "Z shift: " << transform.global_z_offset << std::endl;
-
-//     double shifted_min_x = min_x + transform.global_x_offset;
-//     double shifted_max_x = max_x + transform.global_x_offset;
-//     double shifted_min_y = min_y + transform.global_y_offset;
-//     double shifted_max_y = max_y + transform.global_y_offset;
-//     std::cout << "\nExpected bounds after transformation:" << std::endl;
-//     std::cout << "X: " << shifted_min_x << " to " << shifted_max_x << std::endl;
-//     std::cout << "Y: " << shifted_min_y << " to " << shifted_max_y << std::endl;
-//     std::cout << "Z: " << min_z << " to " << max_z << " (unchanged)" << std::endl;
-    
-//     return transform;
-// }
 GlobalToLocalTransform computeGlobalToLocalTransform(const tinyobj::attrib_t& attrib) {
     GlobalToLocalTransform transform;
     
-    // Find min values only since we want to shift to origin
-    double min_x = DBL_MAX;
-    double min_y = DBL_MAX;
-    double min_z = DBL_MAX;
+    double min_x = DBL_MAX, max_x = -DBL_MAX;
+    double min_y = DBL_MAX, max_y = -DBL_MAX;
+    double min_z = DBL_MAX, max_z = -DBL_MAX;
     
     for (size_t v = 0; v < attrib.vertices.size(); v += 3) {
         double x = attrib.vertices[v];
         double y = attrib.vertices[v + 1];
         double z = attrib.vertices[v + 2];
+        // std::cout << "computeglobal: x: " << x << " y: " << y << " z: " << z << std::endl;
         
         min_x = std::min(min_x, x);
+        max_x = std::max(max_x, x);
         min_y = std::min(min_y, y);
+        max_y = std::max(max_y, y);
         min_z = std::min(min_z, z);
+        max_z = std::max(max_z, z);
     }
 
-    // Calculate offsets to shift coordinates near origin
-    transform.global_x_offset = -369000.0;  // Shift to get ~143.25
-    transform.global_y_offset = -5148000.0; // Shift to get ~489.0
-    transform.global_z_offset = 0.0;        // Don't shift Z
-    transform.needs_transform = true;
+    transform.global_x_offset = -std::round(min_x / 1000.0) * 1000.0;
+    transform.global_y_offset = -std::round(min_y / 1000.0) * 1000.0;
+    transform.global_z_offset = 0.0;
+    // if offsets are gt 0, no need to transform
+    if (transform.global_x_offset > 0 || transform.global_y_offset > 0) {
+        transform.needs_transform = true;
+    }else{
+        transform.needs_transform = false;
+        return transform;
 
+    }
+
+
+
+    std::cout << "\nCoordinate Analysis:" << std::endl;
+    std::cout << std::fixed << std::setprecision(6);
+    std::cout << "Original bounds:" << std::endl;
+    std::cout << "X: " << min_x << " to " << max_x << std::endl;
+    std::cout << "Y: " << min_y << " to " << max_y << std::endl;
+    std::cout << "Z: " << min_z << " to " << max_z << std::endl;
+    std::cout << "\nComputed shifts:" << std::endl;
+    std::cout << "X shift: " << transform.global_x_offset << std::endl;
+    std::cout << "Y shift: " << transform.global_y_offset << std::endl;
+    std::cout << "Z shift: " << transform.global_z_offset << std::endl;
+
+    double shifted_min_x = min_x + transform.global_x_offset;
+    double shifted_max_x = max_x + transform.global_x_offset;
+    double shifted_min_y = min_y + transform.global_y_offset;
+    double shifted_max_y = max_y + transform.global_y_offset;
+    std::cout << "\nExpected bounds after transformation:" << std::endl;
+    std::cout << "X: " << shifted_min_x << " to " << shifted_max_x << std::endl;
+    std::cout << "Y: " << shifted_min_y << " to " << shifted_max_y << std::endl;
+    std::cout << "Z: " << min_z << " to " << max_z << " (unchanged)" << std::endl;
+    
     return transform;
 }
-
-// void applyGlobalToLocalTransform(double& x, double& y, double& z, const GlobalToLocalTransform& transform) {
-//     if (transform.needs_transform) {
-//         x = x + transform.global_x_offset;
-//         y = y + transform.global_y_offset;
-//         z = z + transform.global_z_offset;
-//     }
-// }
 void applyGlobalToLocalTransform(double& x, double& y, double& z, const GlobalToLocalTransform& transform) {
     static double min_positive_x = DBL_MAX;
     static double min_positive_y = DBL_MAX;
@@ -393,9 +368,10 @@ void convertObjToLas(const std::string& objFilename, const std::string& lasFilen
  / _ \| '_ \| | __) | |/ _` / __|
 | (_) | |_) | |/ __/| | (_| \__ \
  \___/|_.__// |_____|_|\__,_|___/
-          |__/
-        
-        
+          |__/            v1.0.0a
+        << OBJ to LAS Converter >>
+        << by: @codebreaker444 >>
+        << github.com/codebreaker44/obj2las >>
         )" << std::endl;
         std::cout << "Version: " << VERSION << std::endl;
         std::cout << "Loading OBJ file: " << objFilename << std::endl;
@@ -423,6 +399,10 @@ void convertObjToLas(const std::string& objFilename, const std::string& lasFilen
 
         // Save transformation parameters for future reference
         std::string transformFile = getFileNameWithoutExtension(lasFilename) + "_transform.txt";
+        if (transform.needs_transform)
+        {
+            std::cout << "Need translation and file saved to: " << transformFile << std::endl;
+        }
         transform.saveTransformInfo(transformFile);
         LAS13Writer writer;
         if (!writer.open(lasFilename)) {
