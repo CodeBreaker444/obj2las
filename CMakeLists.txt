@@ -63,7 +63,7 @@ add_custom_target(test
 add_custom_target(test_complex
     COMMAND $<TARGET_FILE:obj2las> 
             ~/Downloads/data-pillar/3d_models_final/pila_08_obj.obj
-            ${CMAKE_BINARY_DIR}/output_pointcloud_pila.las
+            ${CMAKE_BINARY_DIR}/output_pointcloud_pila_modified.las
     DEPENDS obj2las
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     COMMENT "Running test with sample files"
@@ -71,7 +71,7 @@ add_custom_target(test_complex
 add_custom_target(test_complex_shift
     COMMAND $<TARGET_FILE:obj2las> 
             ~/Downloads/data-pillar-original/pila_08_obj.obj
-            ${CMAKE_BINARY_DIR}/output_pointcloud_pila.las
+            ${CMAKE_BINARY_DIR}/output_pointcloud_pila_shifted.las
     DEPENDS obj2las
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     COMMENT "Running test with sample files"

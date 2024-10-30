@@ -30,7 +30,6 @@ void LAS13Writer::initializeHeader() {
     header.yOffset = 0;
     header.zOffset = 0;
     
-    
     // Initialize bounding box to invalid values
     header.minX = header.minY = header.minZ = std::numeric_limits<double>::max();
     header.maxX = header.maxY = header.maxZ = -std::numeric_limits<double>::max();

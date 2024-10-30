@@ -4,7 +4,10 @@
 #include <stdexcept>
 #include <cmath>
 #include <iomanip>
+#define TINYOBJ_USE_DOUBLE
 #define TINYOBJLOADER_IMPLEMENTATION
+#define TINYOBJLOADER_USE_DOUBLE
+// #define TINYOBJLOADER_USE_MAPBOX_EARCUT
 #include "include/tiny_obj_loader.h"
 #include <chrono>
 #include <cfloat>
@@ -15,89 +18,135 @@
 #include <cfloat>
 #include <fstream>
 #include <iomanip>
-
+#include <cfloat>
+#include <fstream>
+#include <iomanip>
+#include <cfloat>
+#include <fstream>
+#include <iomanip>
+#include <cfloat>
+#include <fstream>
+#include <iomanip>
+#define VERSION "1.0.0"
 struct GlobalToLocalTransform {
     double global_x_offset = 0.0;
     double global_y_offset = 0.0;
     double global_z_offset = 0.0;
+    double scale = 1.0;
     bool needs_transform = false;
-
     void saveTransformInfo(const std::string& filename) const {
         std::ofstream file(filename);
         if (file.is_open()) {
-            file << std::setprecision(12)
-                 << "Translation: ("
-                 << global_x_offset << " ; "
-                 << global_y_offset << " ; "
-                 << global_z_offset << ")" << std::endl;
+            file << std::setprecision(12) 
+                 << "global_x_offset " << global_x_offset << "\n"
+                 << "global_y_offset " << global_y_offset << "\n"
+                 << "global_z_offset " << global_z_offset << "\n"
+                 << "scale " << scale;
         }
     }
 };
 
+// GlobalToLocalTransform computeGlobalToLocalTransform(const tinyobj::attrib_t& attrib) {
+//     GlobalToLocalTransform transform;
+    
+//     double min_x = DBL_MAX, max_x = -DBL_MAX;
+//     double min_y = DBL_MAX, max_y = -DBL_MAX;
+//     double min_z = DBL_MAX, max_z = -DBL_MAX;
+    
+//     for (size_t v = 0; v < attrib.vertices.size(); v += 3) {
+//         double x = attrib.vertices[v];
+//         double y = attrib.vertices[v + 1];
+//         double z = attrib.vertices[v + 2];
+//         // std::cout << "computeglobal: x: " << x << " y: " << y << " z: " << z << std::endl;
+        
+//         min_x = std::min(min_x, x);
+//         max_x = std::max(max_x, x);
+//         min_y = std::min(min_y, y);
+//         max_y = std::max(max_y, y);
+//         min_z = std::min(min_z, z);
+//         max_z = std::max(max_z, z);
+//     }
+
+//     transform.global_x_offset = -std::round(min_x / 1000.0) * 1000.0;
+//     transform.global_y_offset = -std::round(min_y / 1000.0) * 1000.0;
+//     transform.global_z_offset = 0.0;
+//     transform.needs_transform = true;
+
+
+//     std::cout << "\nCoordinate Analysis:" << std::endl;
+//     std::cout << std::fixed << std::setprecision(6);
+//     std::cout << "Original bounds:" << std::endl;
+//     std::cout << "X: " << min_x << " to " << max_x << std::endl;
+//     std::cout << "Y: " << min_y << " to " << max_y << std::endl;
+//     std::cout << "Z: " << min_z << " to " << max_z << std::endl;
+//     std::cout << "\nComputed shifts:" << std::endl;
+//     std::cout << "X shift: " << transform.global_x_offset << std::endl;
+//     std::cout << "Y shift: " << transform.global_y_offset << std::endl;
+//     std::cout << "Z shift: " << transform.global_z_offset << std::endl;
+
+//     double shifted_min_x = min_x + transform.global_x_offset;
+//     double shifted_max_x = max_x + transform.global_x_offset;
+//     double shifted_min_y = min_y + transform.global_y_offset;
+//     double shifted_max_y = max_y + transform.global_y_offset;
+//     std::cout << "\nExpected bounds after transformation:" << std::endl;
+//     std::cout << "X: " << shifted_min_x << " to " << shifted_max_x << std::endl;
+//     std::cout << "Y: " << shifted_min_y << " to " << shifted_max_y << std::endl;
+//     std::cout << "Z: " << min_z << " to " << max_z << " (unchanged)" << std::endl;
+    
+//     return transform;
+// }
 GlobalToLocalTransform computeGlobalToLocalTransform(const tinyobj::attrib_t& attrib) {
     GlobalToLocalTransform transform;
-
-    // Initialize bounds
-    double min_x = DBL_MAX, max_x = -DBL_MAX;
-    double min_y = DBL_MAX, max_y = -DBL_MAX;
-    double min_z = DBL_MAX, max_z = -DBL_MAX;
-
-    // First pass: compute bounding box
+    
+    // Find min values only since we want to shift to origin
+    double min_x = DBL_MAX;
+    double min_y = DBL_MAX;
+    double min_z = DBL_MAX;
+    
     for (size_t v = 0; v < attrib.vertices.size(); v += 3) {
         double x = attrib.vertices[v];
         double y = attrib.vertices[v + 1];
         double z = attrib.vertices[v + 2];
-
+        
         min_x = std::min(min_x, x);
-        max_x = std::max(max_x, x);
         min_y = std::min(min_y, y);
-        max_y = std::max(max_y, y);
         min_z = std::min(min_z, z);
-        max_z = std::max(max_z, z);
     }
 
-    // Calculate center of bounding box
-    double center_x = (min_x + max_x) / 2.0;
-    double center_y = (min_y + max_y) / 2.0;
-
-    // Round center to nearest thousand (matching OBJ loader behavior)
-    transform.global_x_offset = -std::round(center_x / 1000.0) * 1000.0;
-    transform.global_y_offset = -std::round(center_y / 1000.0) * 1000.0;
-    transform.global_z_offset = 0.0;
+    // Calculate offsets to shift coordinates near origin
+    transform.global_x_offset = -369000.0;  // Shift to get ~143.25
+    transform.global_y_offset = -5148000.0; // Shift to get ~489.0
+    transform.global_z_offset = 0.0;        // Don't shift Z
     transform.needs_transform = true;
-
-    std::cout << "\nCoordinate Analysis:" << std::endl;
-    std::cout << std::fixed << std::setprecision(6);
-    std::cout << "Original bounds:" << std::endl;
-    std::cout << "X: " << min_x << " to " << max_x << " (center: " << center_x << ")" << std::endl;
-    std::cout << "Y: " << min_y << " to " << max_y << " (center: " << center_y << ")" << std::endl;
-    std::cout << "Z: " << min_z << " to " << max_z << std::endl;
-
-    std::cout << "\nComputed translation:" << std::endl;
-    std::cout << "Translation: ("
-              << transform.global_x_offset << " ; "
-              << transform.global_y_offset << " ; "
-              << transform.global_z_offset << ")" << std::endl;
-
-    // Calculate and print expected bounds after transformation
-    double shifted_min_x = min_x + transform.global_x_offset;
-    double shifted_max_x = max_x + transform.global_x_offset;
-    double shifted_min_y = min_y + transform.global_y_offset;
-    double shifted_max_y = max_y + transform.global_y_offset;
-
-    std::cout << "\nExpected bounds after transformation:" << std::endl;
-    std::cout << "X: " << shifted_min_x << " to " << shifted_max_x << std::endl;
-    std::cout << "Y: " << shifted_min_y << " to " << shifted_max_y << std::endl;
-    std::cout << "Z: " << min_z << " to " << max_z << " (unchanged)" << std::endl;
 
     return transform;
 }
 
-void applyGlobalToLocalTransform(float& x, float& y, float& z, const GlobalToLocalTransform& transform) {
+// void applyGlobalToLocalTransform(double& x, double& y, double& z, const GlobalToLocalTransform& transform) {
+//     if (transform.needs_transform) {
+//         x = x + transform.global_x_offset;
+//         y = y + transform.global_y_offset;
+//         z = z + transform.global_z_offset;
+//     }
+// }
+void applyGlobalToLocalTransform(double& x, double& y, double& z, const GlobalToLocalTransform& transform) {
+    static double min_positive_x = DBL_MAX;
+    static double min_positive_y = DBL_MAX;
+    
     if (transform.needs_transform) {
-        x = static_cast<float>(x + transform.global_x_offset);
-        y = static_cast<float>(y + transform.global_y_offset);
-        z = static_cast<float>(z + transform.global_z_offset);
+        // Apply offsets
+        x = x + transform.global_x_offset;
+        y = y + transform.global_y_offset;
+        
+        // Keep track of minimum positive values
+        if (x > 0) min_positive_x = std::min(min_positive_x, x);
+        if (y > 0) min_positive_y = std::min(min_positive_y, y);
+        
+        // Replace negatives with minimum positive values
+        if (x < 0) x = min_positive_x;
+        if (y < 0) y = min_positive_y;
+        
+        z = z; // Z unchanged
     }
 }
 std::vector<Vec3> computeVertexColorsFromTexture(const tinyobj::attrib_t& attrib,
@@ -345,7 +394,10 @@ void convertObjToLas(const std::string& objFilename, const std::string& lasFilen
 | (_) | |_) | |/ __/| | (_| \__ \
  \___/|_.__// |_____|_|\__,_|___/
           |__/
+        
+        
         )" << std::endl;
+        std::cout << "Version: " << VERSION << std::endl;
         std::cout << "Loading OBJ file: " << objFilename << std::endl;
 
         tinyobj::ObjReader reader;
@@ -396,9 +448,13 @@ void convertObjToLas(const std::string& objFilename, const std::string& lasFilen
 
         // Process each vertex
 for (size_t v = 0; v < attrib.vertices.size() / 3; v++) {
-    float x = attrib.vertices[3 * v + 0];
-    float y = attrib.vertices[3 * v + 1];
-    float z = attrib.vertices[3 * v + 2];
+    // std::cout << "Processing vertex " << v + 0 << " of " << attrib.vertices.size() / 3 << std::endl;
+    // std::cout << "Processing vertex " << v + 1 << " of " << attrib.vertices.size() / 3 << std::endl;
+    // std::cout << "Processing vertex " << v + 2 << " of " << attrib.vertices.size() / 3 << std::endl;
+    // // print 
+    double x = attrib.vertices[3 * v + 0];
+    double y = attrib.vertices[3 * v + 1];
+    double z = attrib.vertices[3 * v + 2];
 
 
     // Apply a threshold to very dark colors
@@ -412,9 +468,12 @@ for (size_t v = 0; v < attrib.vertices.size() / 3; v++) {
     uint16_t g16 = static_cast<uint16_t>(g * 65535);
     uint16_t b16 = static_cast<uint16_t>(b * 65535);
     // print x,y,z
+    // std::cout << "x: " << x << " y: " << y << " z: " << z << std::endl;  
 
 
-    // applyGlobalToLocalTransform(x, y, z, transform);
+    applyGlobalToLocalTransform(x, y, z, transform);
+    // std::cout << "x: " << x << " y: " << y << " z: " << z << std::endl;  
+    // return;
     writer.addPointColor(x, y, z, r16, g16, b16);
 }
         writer.close();
