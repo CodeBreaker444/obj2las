@@ -12,21 +12,7 @@
 #include <chrono>
 #include <cfloat>
 #include <fstream>
-#include <cfloat>
-#include <fstream>
-#include <iomanip>
-#include <cfloat>
-#include <fstream>
-#include <iomanip>
-#include <cfloat>
-#include <fstream>
-#include <iomanip>
-#include <cfloat>
-#include <fstream>
-#include <iomanip>
-#include <cfloat>
-#include <fstream>
-#include <iomanip>
+
 #define VERSION "1.0.0a"
 
 struct GlobalToLocalTransform {
@@ -72,10 +58,12 @@ GlobalToLocalTransform computeGlobalToLocalTransform(const tinyobj::attrib_t& at
     transform.global_y_offset = -std::round(min_y / 1000.0) * 1000.0;
     transform.global_z_offset = 0.0;
     // if offsets are gt 0, no need to transform
-    if (transform.global_x_offset > 0 || transform.global_y_offset > 0) {
+    if (0-transform.global_x_offset != 0.0 || 0-transform.global_y_offset != 0.0) {
         transform.needs_transform = true;
+        std::cout << "<--Transform needed-->"  << std::endl;
     }else{
         transform.needs_transform = false;
+        std::cout << "<--Transform not needed-->" << std::endl;
         return transform;
 
     }
