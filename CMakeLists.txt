@@ -70,7 +70,7 @@ add_custom_target(test_complex
 )
 add_custom_target(test_complex_shift
     COMMAND $<TARGET_FILE:obj2las> 
-            ~/Downloads/data-pillar-original/pila_08_obj.obj
+            ~/Downloads/TR0500-SD-OA00-PT0-V02/TR0500-SD-OA00-PT0-V02.obj
             ${CMAKE_BINARY_DIR}/output_pointcloud_pila_shifted.las
     DEPENDS obj2las
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
