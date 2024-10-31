@@ -6,12 +6,6 @@
 #include <iostream>
 #include <iomanip>
 #include "las.h"
-#include <cstring>
-#include <ctime>
-#include <algorithm>
-#include <stdexcept>
-#include <iostream>
-#include <iomanip>
 #include <limits>
 
 void LAS13Writer::initializeHeader() {
