@@ -30,7 +30,7 @@ Convert 3D OBJ files to LAS point cloud format with support for materials, textu
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/obj2las.git
+git clone https://github.com/codebreaker444/obj2las.git
 cd obj2las
 ```
 
