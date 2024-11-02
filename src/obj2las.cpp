@@ -92,7 +92,7 @@ GlobalToLocalTransform computeGlobalToLocalTransform(const tinyobj::attrib_t& at
     
     return transform;
 }
-void applyGlobalToLocalTransform(double& x, double& y, double& z, const GlobalToLocalTransform& transform) {
+void applyGlobalToLocalTransform(double& x, double& y, const GlobalToLocalTransform& transform) {
     static double min_positive_x = DBL_MAX;
     static double min_positive_y = DBL_MAX;
     
@@ -109,7 +109,7 @@ void applyGlobalToLocalTransform(double& x, double& y, double& z, const GlobalTo
         if (x < 0) x = min_positive_x;
         if (y < 0) y = min_positive_y;
         
-        z = z; // Z unchanged
+        // z = z; // Z unchanged
     }
 }
 std::vector<Vec3> computeVertexColorsFromTexture(const tinyobj::attrib_t& attrib,
@@ -296,7 +296,7 @@ std::string getFileNameWithoutExtension(const std::string& filename) {
             auto textureIt = textures.find(material.diffuse_texname);
 
             if (textureIt == textures.end()) {
-                std::cout << "Texture not found: " << material.diffuse_texname << std::endl;
+                // std::cout << "Texture not found: " << material.diffuse_texname << materialId << textureIt << std::endl;
                 Vec3 materialColor(material.diffuse[0], material.diffuse[1], material.diffuse[2]);
                 for (unsigned int v = 0; v < fv; v++) {
                     tinyobj::index_t idx = shape.mesh.indices[f * fv + v];
@@ -439,7 +439,7 @@ for (size_t v = 0; v < attrib.vertices.size() / 3; v++) {
     // std::cout << "x: " << x << " y: " << y << " z: " << z << std::endl;  
 
 
-    applyGlobalToLocalTransform(x, y, z, transform);
+    applyGlobalToLocalTransform(x, y, transform);
     // std::cout << "x: " << x << " y: " << y << " z: " << z << std::endl;  
     // return;
     writer.addPointColor(x, y, z, r16, g16, b16);
