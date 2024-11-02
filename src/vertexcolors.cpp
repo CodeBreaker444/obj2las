@@ -62,10 +62,10 @@ void computeVertexColorsFromTextures(
                         tinyobj::index_t idx = shape.mesh.indices[f * fv + v];
                         vertexColors[idx.vertex_index] = materialColor;
                     }
+                    continue;
                 }
             }
         }
-        return;
     }
 
     const auto& texture = textureIt->second;
@@ -74,7 +74,7 @@ void computeVertexColorsFromTextures(
     for (const auto& shape : shapes) {
         for (size_t f = 0; f < shape.mesh.num_face_vertices.size(); f++) {
             if (shape.mesh.material_ids[f] != material_id) {
-                std::cout << "Skipping face with material ID " << shape.mesh.material_ids[f] << std::endl;
+                // std::cout << "Skipping face with material ID " << shape.mesh.material_ids[f] << std::endl;
                 continue;  // Skip faces not using this material
             }
 
@@ -110,12 +110,20 @@ void computeVertexColorsFromTextures(
     }
 
     // Second pass: compute colors and store offsets only for faces using this material
-    const float offsetMagnitude = 0.0001f;
-    std::vector<Vec3> vertexOffsets(attrib.vertices.size() / 3, Vec3(0, 0, 0));
+    // const float offsetMagnitude = 0.0001f;
+    // std::vector<Vec3> vertexOffsets(attrib.vertices.size() / 3, Vec3(0, 0, 0));
 
     for (const auto& shape : shapes) {
         for (size_t f = 0; f < shape.mesh.num_face_vertices.size(); f++) {
             if (shape.mesh.material_ids[f] != material_id) {
+                // put red color to the faces that are not using the material
+                // std::cout << "Skipping face with material ID " << shape.mesh.material_ids[f] << std::endl;
+                // Vec3 materialColor(1, 0, 0);
+                // unsigned int fv = static_cast<unsigned int>(shape.mesh.num_face_vertices[f]);
+                // for (unsigned int v = 0; v < fv; v++) {
+                //     tinyobj::index_t idx = shape.mesh.indices[f * fv + v];
+                //     vertexColors[idx.vertex_index] = materialColor;
+                // }
                 continue;  // Skip faces not using this material
             }
 
@@ -146,10 +154,10 @@ void computeVertexColorsFromTextures(
                 texturedVertices++;
 
                 // Store offset along vertex normal
-                Vec3& normal = vertexNormals[idx.vertex_index];
-                vertexOffsets[idx.vertex_index].x += normal.x * offsetMagnitude;
-                vertexOffsets[idx.vertex_index].y += normal.y * offsetMagnitude;
-                vertexOffsets[idx.vertex_index].z += normal.z * offsetMagnitude;
+                // Vec3& normal = vertexNormals[idx.vertex_index];
+                // vertexOffsets[idx.vertex_index].x += normal.x * offsetMagnitude;
+                // vertexOffsets[idx.vertex_index].y += normal.y * offsetMagnitude;
+                // vertexOffsets[idx.vertex_index].z += normal.z * offsetMagnitude;
             }
         }
     }
