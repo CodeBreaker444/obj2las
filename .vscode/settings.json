@@ -56,6 +56,7 @@
         "ios": "cpp",
         "locale": "cpp",
         "print": "cpp",
-        "stack": "cpp"
+        "stack": "cpp",
+        "iostream": "cpp"
     }
 }

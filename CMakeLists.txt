@@ -19,6 +19,8 @@ set(SOURCES
     src/obj2las.cpp
     src/las.cpp
     src/texture.cpp
+    src/shiftcoords.cpp
+    src/vertexcolors.cpp
 )
 
 # Add header files in include directory
@@ -27,6 +29,8 @@ set(HEADERS
     include/texture.h
     include/tiny_obj_loader.h
     include/stb_image.h
+    include/shiftcoords.h
+    include/vertexcolors.h
 )
 
 # Create the executable
@@ -72,6 +76,14 @@ add_custom_target(test_complex_shift
     COMMAND $<TARGET_FILE:obj2las> 
             ~/Downloads/TR0500-SD-OA00-PT0-V02/TR0500-SD-OA00-PT0-V02.obj
             ${CMAKE_BINARY_DIR}/output_pointcloud_pila_shifted.las
+    DEPENDS obj2las
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    COMMENT "Running test with sample files"
+)
+add_custom_target(test_complex_sample
+    COMMAND $<TARGET_FILE:obj2las> 
+            ~/Downloads/Spaceship/space-shuttle-orbiter.obj
+            ${CMAKE_BINARY_DIR}/output_pointcloud_spaceship.las
     DEPENDS obj2las
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     COMMENT "Running test with sample files"

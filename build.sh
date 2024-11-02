@@ -47,6 +47,17 @@ elif [ "$1" == "test_complex_shift" ]; then
     echo "Running tests"
     ctest
     echo "Tests complete"
+elif [ "$1" == "test_complex_sample" ]; then
+    echo "Creating build directory"
+    mkdir -p build
+    cd build
+    echo "Building project"
+    cmake ..
+    make test_complex_sample
+    echo "Build complete"
+    echo "Running tests"
+    ctest
+    echo "Tests complete"
 elif [ "$1" == "clean" ]; then
     clean
 else
