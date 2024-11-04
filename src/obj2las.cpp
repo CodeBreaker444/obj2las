@@ -112,85 +112,7 @@ void applyGlobalToLocalTransform(double& x, double& y, const GlobalToLocalTransf
         
     }
 }
-std::vector<Vec3> computeVertexColorsFromTexture(const tinyobj::attrib_t& attrib,
-                                                 const std::vector<tinyobj::shape_t>& shapes,
-                                                 const std::vector<tinyobj::material_t>& materials,
-                                                 const std::string& objFilename,
-                                                 const std::string& textureFilename) {
-    (void)materials; // Suppress unused parameter warning
 
-    std::vector<Vec3> vertexColors(attrib.vertices.size() / 3);
-
-    if (attrib.texcoords.empty()) {
-        std::cout << "No texture coordinates found in the OBJ file." << std::endl;
-        return vertexColors;  // Return empty colors if no texture coordinates
-    }
-
-    std::string objPath = getParentPath(objFilename);
-    std::string texturePath = textureFilename;
-
-    // If texture path is relative, make it relative to OBJ file location
-    if (texturePath.find(':') == std::string::npos &&
-        (texturePath.empty() || (texturePath[0] != '/' && texturePath[0] != '\\'))) {
-        texturePath = joinPaths(objPath, texturePath);
-    }
-
-    Texture texture = loadTexture(texturePath);
-    if (texture.data.empty()) {
-        std::cerr << "Failed to load texture: " << texturePath << std::endl;
-        return vertexColors;  // Return empty colors if texture loading failed
-    }
-
-    // std::vector<Vec3> colorSums(attrib.vertices.size() / 3, Vec3());
-    // std::vector<int> colorCounts(attrib.vertices.size() / 3, 0);
-
-    for (const auto& shape : shapes) {
-        for (size_t f = 0; f < shape.mesh.num_face_vertices.size(); f++) {
-            unsigned int fv = static_cast<unsigned int>(shape.mesh.num_face_vertices[f]);
-            for (unsigned int vert = 0; vert < fv; vert++) {
-                tinyobj::index_t idx = shape.mesh.indices[f * fv + vert];
-                if (idx.texcoord_index < 0) continue;
-
-                float u = attrib.texcoords[2 * idx.texcoord_index + 0];
-                float v = attrib.texcoords[2 * idx.texcoord_index + 1];
-
-                Vec3 color = sampleTexture(texture, u, v);
-                // colorSums[idx.vertex_index] = colorSums[idx.vertex_index] + color;
-                // colorCounts[idx.vertex_index]++;
-            }
-        }
-    }
-
-    // for (size_t i = 0; i < vertexColors.size(); i++) {
-    //     if (colorCounts[i] > 0) {
-    //         vertexColors[i] = colorSums[i] * (1.0f / colorCounts[i]);
-    //         // Apply gamma correction
-    //         vertexColors[i].x = pow(vertexColors[i].x, 0.4545f);
-    //         vertexColors[i].y = pow(vertexColors[i].y, 0.4545f);
-    //         vertexColors[i].z = pow(vertexColors[i].z, 0.4545f);
-    //     }
-    // }
-    std::cout << "Computed " << vertexColors.size() << " vertex colors." << std::endl;
-    // print unique colors
-    std::vector<Vec3> uniqueColors;
-    for (size_t i = 0; i < vertexColors.size(); i++) {
-        bool found = false;
-        for (size_t j = 0; j < uniqueColors.size(); j++) {
-            if (vertexColors[i].x == uniqueColors[j].x &&
-                vertexColors[i].y == uniqueColors[j].y &&
-                vertexColors[i].z == uniqueColors[j].z) {
-                found = true;
-                break;
-            }
-        }
-        if (!found) {
-            uniqueColors.push_back(vertexColors[i]);
-        }
-    }
-    std::cout << "Unique colors: " << uniqueColors.size() << std::endl;
-
-    return vertexColors;
-}
 
 // Helper function to get file extension
 std::string getFileExtension(const std::string& filename) {
@@ -258,14 +180,14 @@ void computeVertexColorsFromTextures(
         for (const auto& shape : shapes) {
             for (size_t f = 0; f < shape.mesh.num_face_vertices.size(); f++) {
                 if (shape.mesh.material_ids[f] == material_id) {
-                    unsigned int fv = shape.mesh.num_face_vertices[f];
-                    for (unsigned int vert = 0; vert < fv; vert++) {
-                        tinyobj::index_t idx = shape.mesh.indices[f * fv + vert];
-                        // if (idx.vertex_index >= 0) {
-                        //     colorSums[idx.vertex_index] = colorSums[idx.vertex_index] + materialColor;
-                        //     colorCounts[idx.vertex_index]++;
-                        // }
-                    }
+                    // unsigned int fv = shape.mesh.num_face_vertices[f];
+                    // for (unsigned int vert = 0; vert < fv; vert++) {
+                    //     tinyobj::index_t idx = shape.mesh.indices[f * fv + vert];
+                    //     if (idx.vertex_index >= 0) {
+                    //         colorSums[idx.vertex_index] = colorSums[idx.vertex_index] + materialColor;
+                    //         colorCounts[idx.vertex_index]++;
+                    //     }
+                    // }
                 }
             }
         }
