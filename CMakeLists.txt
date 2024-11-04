@@ -62,8 +62,8 @@ add_custom_target(test
 )
 add_custom_target(test_complex
     COMMAND $<TARGET_FILE:obj2las> 
-            ~/Downloads/data-pillar/arena/arena.obj
-            ${CMAKE_BINARY_DIR}/arena.las
+            /home/un1t/Downloads/TR0500-SD-OA00-PT0-V02/TR0500-SD-OA00-PT0-V02.obj
+            ${CMAKE_BINARY_DIR}/output_pointcloud_complextex.las
     DEPENDS obj2las
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     COMMENT "Running test with sample files"
