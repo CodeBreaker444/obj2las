@@ -86,13 +86,17 @@ Vec3 sampleTexture(const Texture& texture, float u, float v) {
     // Convert to pixel coordinates
     int x = static_cast<int>(u * (texture.width - 1));
     int y = static_cast<int>(v * (texture.height - 1));
+    // PRINT X, Y, WIDTH, HEIGHT
 
     // Ensure x and y are within bounds
     x = std::max(0, std::min(x, texture.width - 1));
     y = std::max(0, std::min(y, texture.height - 1));
 
+    // PRINT X, Y, WIDTH, HEIGHT
+
     // Calculate the index in the image data array
     int index = (y * texture.width + x) * texture.channels;
+    // PRINT INDEX
     
 
     // Sample the color

@@ -206,7 +206,8 @@ std::string getFileNameWithoutExtension(const std::string& filename) {
     else lastSlash++;
     if (lastDot == std::string::npos || lastDot < lastSlash) lastDot = filename.length();
     return filename.substr(lastSlash, lastDot - lastSlash);
-}std::vector<Vec3> computeVertexColorsFromTextures(
+}
+std::vector<Vec3> computeVertexColorsFromTextures(
     const tinyobj::attrib_t& attrib,
     const std::vector<tinyobj::shape_t>& shapes,
     const std::vector<tinyobj::material_t>& materials,
