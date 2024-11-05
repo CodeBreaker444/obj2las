@@ -6,6 +6,8 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+#define brightnessIncrease 1.05f  // 5% increase
+
 
 std::map<std::string, Texture> textureCache;
 template<typename T>
@@ -201,7 +203,6 @@ Vec3 sampleTexture(const Texture& texture, float u, float v) {
     // color.y = std::max(color.y, epsilon);
     // color.z = std::max(color.z, epsilon);
     // std::cout << "Color: " << color.x << ", " << color.y << ", " << color.z << std::endl;
-    float brightnessIncrease = 1.10f;  // 10% increase
     // check if color is close to white
     if (color.x < 200 && color.y < 200 && color.z < 200) {
     
