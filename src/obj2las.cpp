@@ -83,7 +83,7 @@ void convertObjToLas(const std::string& objFilename, const std::string& lasFilen
         if (!writer.open(lasFilename)) {
             throw std::runtime_error("Failed to open LAS file for writing: " + lasFilename);
         }
-        std::vector<Vec3> vertexColors;
+    std::vector<Vec3> vertexColors(attrib.vertices.size() / 3, Vec3(1, 1, 1));
                 std::vector<Vec3> vertexColorsoriginal;
 
         // Load all textures

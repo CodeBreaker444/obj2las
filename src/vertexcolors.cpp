@@ -5,6 +5,7 @@
 #include "tiny_obj_loader.h"
 #include <iostream>
 #include <numeric>
+#define gamma_percent 0.65f
 void computeVertexColorsFromTextures(
     const tinyobj::attrib_t& attrib,
     const std::vector<tinyobj::shape_t>& shapes,
@@ -15,7 +16,8 @@ void computeVertexColorsFromTextures(
 
     // static std::vector<Vec3> colorSums;
     // static std::vector<int> colorCounts;
-    static bool firstMaterial = true;
+    // static bool firstMaterial = true;
+    float gamma = 1.0f / gamma_percent;
     // std::vector<Vec3> vertexNormals(attrib.vertices.size() / 3, Vec3(0, 0, 0));
 
     // Helper functions for vector operations
@@ -35,12 +37,12 @@ void computeVertexColorsFromTextures(
     //         v.z /= length;
     //     }
     // };
-    if (firstMaterial) {
-        // colorSums.resize(attrib.vertices.size() / 3, Vec3());
-        // colorCounts.resize(attrib.vertices.size() / 3, 0);
-        vertexColors.resize(attrib.vertices.size() / 3);
-        firstMaterial = false;
-    }
+    // if (firstMaterial) {
+    //     // colorSums.resize(attrib.vertices.size() / 3, Vec3());
+    //     // colorCounts.resize(attrib.vertices.size() / 3, 0);
+    //     vertexColors.resize(attrib.vertices.size() / 3);
+    //     firstMaterial = false;
+    // }
 
     if (attrib.texcoords.empty()) {
         std::cout << "No texture coordinates found in the OBJ file." << std::endl;
@@ -129,10 +131,11 @@ void computeVertexColorsFromTextures(
            // Flip V coordinate
                 tex_v = 1.0f - tex_v;
                 Vec3 color = sampleTexture(texture, tex_u, tex_v);
-                                // Apply gamma correction
-                color.x = std::pow(color.x / 255.0f, 2.2f);
-                color.y = std::pow(color.y / 255.0f, 2.2f);
-                color.z = std::pow(color.z / 255.0f, 2.2f);
+                                // Apply gamma correction gamma=2.2 in percentage is 0.4545 ,so to increase 10% gamma=1.1 and 
+                
+                color.x = std::pow(color.x / 255.0f, gamma);
+                color.y = std::pow(color.y / 255.0f, gamma);
+                color.z = std::pow(color.z / 255.0f, gamma);
 
                 // colorSums[idx.vertex_index] = colorSums[idx.vertex_index] + color;
                 // colorCounts[idx.vertex_index]++;
@@ -187,5 +190,7 @@ void computeVertexColorsFromTextures(
     
 
         std::cout << "Computed " << vertexColors.size() << " vertex colors." << texturedVertices << std::endl;
+        // applied gamma correction
+        std::cout << "Gamma correction applied: " << gamma_percent * 100  << "%" << gamma << std::endl;
         // std::cout << "Unique colors: " << uniqueColors.size() << std::endl;
 }

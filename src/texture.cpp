@@ -201,7 +201,7 @@ Vec3 sampleTexture(const Texture& texture, float u, float v) {
     // color.y = std::max(color.y, epsilon);
     // color.z = std::max(color.z, epsilon);
     // std::cout << "Color: " << color.x << ", " << color.y << ", " << color.z << std::endl;
-    float brightnessIncrease = 1.15f;  // 15% increase
+    float brightnessIncrease = 1.10f;  // 10% increase
     // check if color is close to white
     if (color.x < 200 && color.y < 200 && color.z < 200) {
     
