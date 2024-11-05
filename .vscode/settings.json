@@ -57,6 +57,22 @@
         "locale": "cpp",
         "print": "cpp",
         "stack": "cpp",
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "__hash_table": "cpp",
+        "__node_handle": "cpp",
+        "__tree": "cpp",
+        "charconv": "cpp",
+        "cstdarg": "cpp",
+        "deque": "cpp",
+        "execution": "cpp",
+        "forward_list": "cpp",
+        "map": "cpp",
+        "optional": "cpp",
+        "queue": "cpp",
+        "ratio": "cpp",
+        "set": "cpp",
+        "sstream": "cpp",
+        "unordered_map": "cpp",
+        "variant": "cpp"
     }
 }

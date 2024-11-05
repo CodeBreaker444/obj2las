@@ -208,6 +208,7 @@ Vec3 sampleTexture(const Texture& texture, float u, float v) {
     }
     return color;
 }
+
 std::map<std::string, Texture> loadTextures(const std::string& mtlFilename) {
     std::map<std::string, Texture> textures;
     std::ifstream mtlFile(mtlFilename);
