@@ -13,83 +13,179 @@ void computeVertexColorsFromTextures(
     const std::map<std::string, Texture>& textures,
     std::vector<Vec3>& vertexColors) {
 
-    // Initialize colors only on first call
-    if (vertexColors.empty()) {
+    // static std::vector<Vec3> colorSums;
+    // static std::vector<int> colorCounts;
+    static bool firstMaterial = true;
+    // std::vector<Vec3> vertexNormals(attrib.vertices.size() / 3, Vec3(0, 0, 0));
+
+    // Helper functions for vector operations
+    // auto vec3_subtract = [](const Vec3& a, const Vec3& b) -> Vec3 {
+    //     return Vec3(a.x - b.x, a.y - b.y, a.z - b.z);
+    // };
+
+    // auto vec3_cross = [](const Vec3& a, const Vec3& b) -> Vec3 {
+    //     return Vec3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
+    // };
+
+    // auto vec3_normalize = [](Vec3& v) {
+    //     float length = std::sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+    //     if (length > 0) {
+    //         v.x /= length;
+    //         v.y /= length;
+    //         v.z /= length;
+    //     }
+    // };
+    if (firstMaterial) {
+        // colorSums.resize(attrib.vertices.size() / 3, Vec3());
+        // colorCounts.resize(attrib.vertices.size() / 3, 0);
         vertexColors.resize(attrib.vertices.size() / 3);
+        firstMaterial = false;
     }
 
     if (attrib.texcoords.empty()) {
         std::cout << "No texture coordinates found in the OBJ file." << std::endl;
         return;
     }
+    std::cout << "Number of material_id: " << material_id << std::endl;
 
-    // Process texture
     auto textureIt = textures.find(material.diffuse_texname);
-    if (textureIt == textures.end()) {
-        std::cout << "No texture found for material: " << material.name << std::endl;
-        return;
-    }
+    // if (textureIt == textures.end()) {
+    //     std::cout << "Texture not found: " << material.diffuse_texname << std::endl;
+    //     Vec3 materialColor(material.diffuse[0], material.diffuse[1], material.diffuse[2]);
+    //     for (const auto& shape : shapes) {
+    //         for (size_t f = 0; f < shape.mesh.num_face_vertices.size(); f++) {
+    //             if (shape.mesh.material_ids[f] == material_id) {
+    //                 // unsigned int fv = shape.mesh.num_face_vertices[f];
+    //                 // for (unsigned int vert = 0; vert < fv; vert++) {
+    //                 //     tinyobj::index_t idx = shape.mesh.indices[f * fv + vert];
+    //                 //     if (idx.vertex_index >= 0) {
+    //                 //         colorSums[idx.vertex_index] = colorSums[idx.vertex_index] + materialColor;
+    //                 //         colorCounts[idx.vertex_index]++;
+    //                 //     }
+    //                 // }
+    //             }
+    //         }
+    //     }
+    //     return;
+    // }
+    // First pass: compute vertex normals
+    // for (const auto& shape : shapes) {
+    //     for (size_t f = 0; f < shape.mesh.num_face_vertices.size(); f++) {
+    //          if (shape.mesh.material_ids[f] != material_id) {
+    //             // std::cout << "Material ID mismatch: " << shape.mesh.material_ids[f] << " != " << material_id << std::endl;
+    //             continue;
+    //         }
+    //         unsigned int fv = static_cast<unsigned int>(shape.mesh.num_face_vertices[f]);
+ 
+    //         // Compute face normal
+    //         Vec3 v0, v1, v2;
+    //         for (unsigned int v = 0; v < fv; v++) {
+    //             tinyobj::index_t idx = shape.mesh.indices[f * fv + v];
+    //             float vx = attrib.vertices[3 * idx.vertex_index + 0];
+    //             float vy = attrib.vertices[3 * idx.vertex_index + 1];
+    //             float vz = attrib.vertices[3 * idx.vertex_index + 2];
+    //             if (v == 0) v0 = Vec3(vx, vy, vz);
+    //             if (v == 1) v1 = Vec3(vx, vy, vz);
+    //             if (v == 2) v2 = Vec3(vx, vy, vz);
+    //         }
+    //         Vec3 faceNormal = vec3_cross(vec3_subtract(v1, v0), vec3_subtract(v2, v0));
+    //         vec3_normalize(faceNormal);
 
-    const auto& texture = textureIt->second;
-    
-    // Temporary vectors for this material only
-    std::vector<Vec3> materialColorSums(attrib.vertices.size() / 3, Vec3());
-    std::vector<int> materialColorCounts(attrib.vertices.size() / 3, 0);
-    int totalVertices = 0;
-    
-    // Process vertices for this material
+    //         // Accumulate face normal to vertex normals
+    //         for (unsigned int v = 0; v < fv; v++) {
+    //             tinyobj::index_t idx = shape.mesh.indices[f * fv + v];
+    //             vertexNormals[idx.vertex_index].x += faceNormal.x;
+    //             vertexNormals[idx.vertex_index].y += faceNormal.y;
+    //             vertexNormals[idx.vertex_index].z += faceNormal.z;
+    //         }
+    //     }
+    // }
+
+    // // Normalize vertex normals
+    // for (auto& normal : vertexNormals) {
+    //     vec3_normalize(normal);
+    // }
+    // const float offsetMagnitude = 0.0001f; // Adjust this value as needed
+    // std::vector<Vec3> vertexOffsets(attrib.vertices.size() / 3, Vec3(0, 0, 0));
+
+        // std::vector<Vec3> uniqueColors;
+    unsigned int texturedVertices = 0;
     for (const auto& shape : shapes) {
         for (size_t f = 0; f < shape.mesh.num_face_vertices.size(); f++) {
             if (shape.mesh.material_ids[f] != material_id) {
+                // std::cout << "Material ID mismatch: " << shape.mesh.material_ids[f] << " != " << material_id << std::endl;
                 continue;
             }
+    const auto& texture = textureIt->second;
 
             unsigned int fv = shape.mesh.num_face_vertices[f];
             for (unsigned int vert = 0; vert < fv; vert++) {
                 tinyobj::index_t idx = shape.mesh.indices[f * fv + vert];
-                if (idx.texcoord_index < 0) continue;  // Skip if no texture coordinates
+               
+                if (idx.texcoord_index < 0 || idx.vertex_index < 0) continue;
 
-                // Use exact same texture coordinate sampling as original
-                float u = attrib.texcoords[2 * idx.texcoord_index + 0];
-                float v = attrib.texcoords[2 * idx.texcoord_index + 1];
+                float tex_u = attrib.texcoords[2 * idx.texcoord_index + 0];
+                float tex_v = attrib.texcoords[2 * idx.texcoord_index + 1];
+           // Flip V coordinate
+                tex_v = 1.0f - tex_v;
+                Vec3 color = sampleTexture(texture, tex_u, tex_v);
+                                // Apply gamma correction
+                color.x = std::pow(color.x / 255.0f, 2.2f);
+                color.y = std::pow(color.y / 255.0f, 2.2f);
+                color.z = std::pow(color.z / 255.0f, 2.2f);
 
-                // Sample texture identical to original code
-                Vec3 color = sampleTexture(texture, u, v);
-                
-                // Accumulate colors exactly as original did
-                materialColorSums[idx.vertex_index] = materialColorSums[idx.vertex_index] + color;
-                materialColorCounts[idx.vertex_index]++;
-                totalVertices++;
+                // colorSums[idx.vertex_index] = colorSums[idx.vertex_index] + color;
+                // colorCounts[idx.vertex_index]++;
+                 vertexColors[idx.vertex_index] = color;
+
+                // Store offset along vertex normal
+                // Vec3& normal = vertexNormals[idx.vertex_index];
+                // vertexOffsets[idx.vertex_index].x += normal.x * offsetMagnitude;
+                // vertexOffsets[idx.vertex_index].y += normal.y * offsetMagnitude;
+                // vertexOffsets[idx.vertex_index].z += normal.z * offsetMagnitude;
+        
+                //  if (idx.vertex_index==v_id){
+                //     std::cout << "idx: " << idx.vertex_index << " tex_u: " << tex_u << " tex_v: " << tex_v << std::endl;
+                //     // print color
+                //     std::cout << "color: " << color.x << " " << color.y << " " << color.z << std::endl;
+                //     // print material id
+                //     std::cout << "material id: " << material_id << std::endl;
+                //     return;
+                // }
+                texturedVertices++;
+          
             }
+
         }
+    
+
+    // if (material_id == static_cast<int>(textures.size()) - 1) {
+    //     for (size_t i = 0; i < vertexColors.size(); i++) {
+    //         if (colorCounts[i] > 0) {
+    //             vertexColors[i] = colorSums[i] * (1.0f / colorCounts[i]);
+    //             vertexColors[i].x = pow(vertexColors[i].x / 255.0f, 0.4545f);
+    //             vertexColors[i].y = pow(vertexColors[i].y / 255.0f, 0.4545f);
+    //             vertexColors[i].z = pow(vertexColors[i].z / 255.0f, 0.4545f);
+    //         }
+    //     }
+        
+        // for (const auto& color : vertexColors) {
+        //     bool found = false;
+        //     for (const auto& unique : uniqueColors) {
+        //         if (color.x == unique.x && color.y == unique.y && color.z == unique.z) {
+        //             found = true;
+        //             break;
+        //         }
+        //     }
+        //     if (!found) {
+        //         uniqueColors.push_back(color);
+        //     }
+        // }
+    
+        
     }
+    
 
-    // Apply colors for this material
-    int processedVertices = 0;
-    for (size_t i = 0; i < vertexColors.size(); i++) {
-        if (materialColorCounts[i] > 0) {
-            // Average colors exactly as original did
-            Vec3 avgColor = materialColorSums[i] * (1.0f / materialColorCounts[i]);
-            
-            // Apply gamma correction exactly as original
-            avgColor.x = pow(avgColor.x / 255.0f, 0.4545f);
-            avgColor.y = pow(avgColor.y / 255.0f, 0.4545f);
-            avgColor.z = pow(avgColor.z / 255.0f, 0.4545f);
-
-            // Store the color
-            if (vertexColors[i].x != 0 || vertexColors[i].y != 0 || vertexColors[i].z != 0) {
-                // If vertex already has color, blend
-                vertexColors[i].x = (vertexColors[i].x + avgColor.x) * 0.5f;
-                vertexColors[i].y = (vertexColors[i].y + avgColor.y) * 0.5f;
-                vertexColors[i].z = (vertexColors[i].z + avgColor.z) * 0.5f;
-            } else {
-                vertexColors[i] = avgColor;
-            }
-            processedVertices++;
-        }
-    }
-
-    std::cout << "Material " << material.name << " statistics:" << std::endl
-              << "  Total vertices processed: " << totalVertices << std::endl
-              << "  Unique vertices processed: " << processedVertices << std::endl;
+        std::cout << "Computed " << vertexColors.size() << " vertex colors." << texturedVertices << std::endl;
+        // std::cout << "Unique colors: " << uniqueColors.size() << std::endl;
 }
