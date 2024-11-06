@@ -34,6 +34,7 @@ std::string getFileNameWithoutExtension(const std::string& filename) {
 void convertObjToLas(const std::string& objFilename, const std::string& lasFilename) {
     try {
         tinyobj::ObjReaderConfig reader_config;
+        int material_id;
         reader_config.mtl_search_path = getParentPath(objFilename); // Path to material files
         // add time to measure the time
         auto start = std::chrono::high_resolution_clock::now();
@@ -89,7 +90,15 @@ void convertObjToLas(const std::string& objFilename, const std::string& lasFilen
         // Load all textures
         std::map<std::string, Texture> textures;
         // std::map<std::string, Texture> texturesoriginal;
-        int material_id = 1;
+        if(materials.size() == 0) {
+            std::cout << "No materials found in the OBJ file." << std::endl;
+            return;
+        }else if (materials.size()==1)
+        {
+            material_id=0;
+        }else{
+            material_id=1;
+        }        
         for (const auto& material : materials) {
             if (!material.diffuse_texname.empty()) {
                 std::string texturePath = joinPaths(getParentPath(objFilename), material.diffuse_texname);

@@ -50,7 +50,6 @@ void computeVertexColorsFromTextures(
     }
     std::cout << "Number of material_id: " << material_id << std::endl;
 
-    auto textureIt = textures.find(material.diffuse_texname);
     // if (textureIt == textures.end()) {
     //     std::cout << "Texture not found: " << material.diffuse_texname << std::endl;
     //     Vec3 materialColor(material.diffuse[0], material.diffuse[1], material.diffuse[2]);
@@ -114,6 +113,8 @@ void computeVertexColorsFromTextures(
     unsigned int texturedVertices = 0;
     for (const auto& shape : shapes) {
         for (size_t f = 0; f < shape.mesh.num_face_vertices.size(); f++) {
+                auto textureIt = textures.find(material.diffuse_texname);
+
             if (shape.mesh.material_ids[f] != material_id) {
                 // std::cout << "Material ID mismatch: " << shape.mesh.material_ids[f] << " != " << material_id << std::endl;
                 continue;

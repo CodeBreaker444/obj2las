@@ -1,5 +1,6 @@
 #ifndef SHIFTCOORDS_H
 #define SHIFTCOORDS_H
+#include <iomanip>
 #include <string>
 #include <vector>
 #include <fstream>
