@@ -76,6 +76,14 @@ add_custom_target(test_complex_shift
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     COMMENT "Running test with sample files"
 )
+add_custom_target(test_complex_textures
+    COMMAND $<TARGET_FILE:obj2las> 
+            ~/Downloads/TR0500-SD-OA00-PT0-V02/TR0500-SD-OA00-PT0-V02.obj
+            ${CMAKE_BINARY_DIR}/output_pointcloud_bridge.las
+    DEPENDS obj2las
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    COMMENT "Running test with sample files"
+)
 add_custom_target(clean-all
     COMMAND ${CMAKE_BUILD_TOOL} clean
     COMMAND ${CMAKE_COMMAND} -P ${CMAKE_SOURCE_DIR}/cmake/clean-all.cmake
