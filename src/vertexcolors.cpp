@@ -113,15 +113,14 @@ void computeVertexColorsFromTextures(
     unsigned int texturedVertices = 0;
     for (const auto& shape : shapes) {
         for (size_t f = 0; f < shape.mesh.num_face_vertices.size(); f++) {
-                auto textureIt = textures.find(material.diffuse_texname);
+                // auto textureIt = textures.find(material.diffuse_texname);
 
             if (shape.mesh.material_ids[f] != material_id) {
                 // std::cout << "Material ID mismatch: " << shape.mesh.material_ids[f] << " != " << material_id << std::endl;
                 continue;
             }
-    const auto& texture = textureIt->second;
 
-            unsigned int fv = shape.mesh.num_face_vertices[f];
+            unsigned int fv = static_cast<unsigned int>(shape.mesh.num_face_vertices[f]);
             for (unsigned int vert = 0; vert < fv; vert++) {
                 tinyobj::index_t idx = shape.mesh.indices[f * fv + vert];
                
@@ -131,16 +130,24 @@ void computeVertexColorsFromTextures(
                 float tex_v = attrib.texcoords[2 * idx.texcoord_index + 1];
            // Flip V coordinate
                 tex_v = 1.0f - tex_v;
-                Vec3 color = sampleTexture(texture, tex_u, tex_v);
+                std::string texturename = material.diffuse_texname;
+                Vec3 color = sampleTexture(textures.at(texturename), tex_u, tex_v);
                                 // Apply gamma correction gamma=2.2 in percentage is 0.4545 ,so to increase 10% gamma=1.1 and 
                 
-                color.x = std::pow(color.x / 255.0f, gamma);
-                color.y = std::pow(color.y / 255.0f, gamma);
-                color.z = std::pow(color.z / 255.0f, gamma);
+                color.x = std::pow(color.x / 255.0f, 2.2f);
+                color.y = std::pow(color.y / 255.0f, 2.2f);
+                color.z = std::pow(color.z / 255.0f, 2.2f);
 
                 // colorSums[idx.vertex_index] = colorSums[idx.vertex_index] + color;
                 // colorCounts[idx.vertex_index]++;
                  vertexColors[idx.vertex_index] = color;
+                if(idx.vertex_index==405){
+                    //print all the details
+                    std::cout << "idx: " << idx.vertex_index << " tex_u: " << tex_u << " tex_v: " << tex_v << std::endl;
+                    std::cout << "color: " << color.x << " " << color.y << " " << color.z << std::endl;
+                    std::cout << "material id: " << material_id<< material.diffuse_texname << std::endl;
+                    continue;    
+                }
 
                 // Store offset along vertex normal
                 // Vec3& normal = vertexNormals[idx.vertex_index];

@@ -6,7 +6,7 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
-#define brightnessIncrease 1.05f  // 5% increase
+#define brightnessIncrease 1.03f  // 5% increase
 
 
 std::map<std::string, Texture> textureCache;
@@ -80,8 +80,8 @@ Texture loadTexture(const std::string& filename) {
 
 Vec3 sampleTexture(const Texture& texture, float u, float v) {
     // Ensure u and v are in [0, 1] range
-    u = std::fmod(u, 1.0f);
-    v = std::fmod(v, 1.0f);
+    // u = std::fmod(u, 1.0f);
+    // v = std::fmod(v, 1.0f);
     if (u < 0) u += 1.0f;
     if (v < 0) v += 1.0f;
     
@@ -210,6 +210,10 @@ Vec3 sampleTexture(const Texture& texture, float u, float v) {
         color.x *= brightnessIncrease;
         color.y *= brightnessIncrease;
         color.z *= brightnessIncrease;
+    }
+    // print color for u: 0.817245 ,v: 0.401519
+    if (u == 0.817245 && v == 0.401519) {
+        std::cout << "U and V Color: " << color.x << ", " << color.y << ", " << color.z << std::endl;
     }
     return color;
 }

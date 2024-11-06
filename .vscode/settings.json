@@ -73,6 +73,8 @@
         "set": "cpp",
         "sstream": "cpp",
         "unordered_map": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "span": "cpp",
+        "filesystem": "cpp"
     }
 }
