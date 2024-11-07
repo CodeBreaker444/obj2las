@@ -59,25 +59,6 @@ Texture loadTexture(const std::string& filename) {
     return texture;
 }
 
-// Vec3 sampleTexture(const Texture& texture, float u, float v) {
-//     if (texture.data.empty()) {
-//         return Vec3();
-//     }
-
-//     int x = static_cast<int>(u * (texture.width - 1));
-//     int y = static_cast<int>((1 - v) * (texture.height - 1));  // Flip V coordinate
-
-//     x = std::max(0, std::min(x, texture.width - 1));
-//     y = std::max(0, std::min(y, texture.height - 1));
-
-//     int index = (y * texture.width + x) * 3;
-//     return Vec3(
-//         texture.data[index] / 255.0f,
-//         texture.data[index + 1] / 255.0f,
-//         texture.data[index + 2] / 255.0f
-//     );
-// }
-
 Vec3 sampleTexture(const Texture& texture, float u, float v) {
     // Ensure u and v are in [0, 1] range
     u = std::fmod(u, 1.0f);
@@ -104,9 +85,7 @@ Vec3 sampleTexture(const Texture& texture, float u, float v) {
     // Sample the color
     Vec3 color;
     if (texture.channels >= 3) {
-        //     // gamma correction
 
-        
         color.x = static_cast<float>(texture.data[index + 0]);
         color.y = static_cast<float>(texture.data[index + 1]);
         color.z = static_cast<float>(texture.data[index + 2]);
@@ -128,85 +107,8 @@ Vec3 sampleTexture(const Texture& texture, float u, float v) {
     if (color.z < 0 || color.z > 255) {
         std::cout << "Color z out of range: " << color.z << std::endl;
     }
-    // // Calculate the average intensity before adjustments
-    // float avgIntensity = (color.x + color.y + color.z) / 3.0f;
-
-    // // Define thresholds
-    // const float darkThreshold = 50.0f;  // Increased dark threshold
-    // const float brightnessIncrease = 1.2f;  // 20% increase
-
-    // if (avgIntensity < darkThreshold) {
-    //     // For dark colors, normalize towards black with emphasis on blue
-    //     float maxComponent = std::max(color.x, std::max(color.y, color.z));
-    //     if (maxComponent > 0) {
-    //         float normalizationFactor = avgIntensity / maxComponent;
-            
-    //         // More aggressive normalization for blue
-    //         float blueNormalizationFactor = normalizationFactor * 1.5f;  // Adjust this factor as needed
-            
-    //         color.x = color.x + normalizationFactor * (avgIntensity - color.x);
-    //         color.y = color.y + normalizationFactor * (avgIntensity - color.y);
-    //         color.z = color.z + blueNormalizationFactor * (avgIntensity - color.z);
-            
-    //         // Ensure blue doesn't exceed other channels after normalization
-    //         color.z = std::min(color.z, std::max(color.x, color.y));
-    //     }
-
-    //     // Apply a stronger brightness increase for dark colors
-    //     float darkBrightnessIncrease = 1.0f + (darkThreshold - avgIntensity) / darkThreshold;
-    //     color.x *= darkBrightnessIncrease;
-    //     color.y *= darkBrightnessIncrease;
-    //     color.z *= darkBrightnessIncrease;
-    // } else {
-    //     // For brighter colors, apply the standard brightness increase
-    //     color.x *= brightnessIncrease;
-    //     color.y *= brightnessIncrease;
-    //     color.z *= brightnessIncrease;
-    // }
-
-    // // Additional step to reduce blue dominance
-    // if (color.z > std::max(color.x, color.y) * 1.2f) {  // If blue is significantly higher
-    //     float avgOtherChannels = (color.x + color.y) / 2.0f;
-    //     color.z = avgOtherChannels + (color.z - avgOtherChannels) * 0.5f;  // Reduce blue intensity
-    // }
-    // // additional step to reduce green dominance
-    // if (color.y > std::max(color.x, color.z) * 1.2f) {  // If green is significantly higher
-    //     float avgOtherChannels = (color.x + color.z) / 2.0f;
-    //     color.y = avgOtherChannels + (color.y - avgOtherChannels) * 0.5f;  // Reduce green intensity
-    // }
-    // //additional step to reduce red dominance
-    // if (color.x > std::max(color.y, color.z) * 1.2f) {  // If red is significantly higher
-    //     float avgOtherChannels = (color.y + color.z) / 2.0f;
-    //     color.x = avgOtherChannels + (color.x - avgOtherChannels) * 0.5f;  // Reduce red intensity
-    // }
-    // // New step: Replace unnecessary light greens with black
-    // const float greenThreshold = 100.0f;  // Adjust this value as needed
-    // const float greenDominanceThreshold = 1.1f;  // How much higher green should be compared to other channels
-
-    // if (color.y > greenThreshold && 
-    //     color.y > color.x * greenDominanceThreshold && 
-    //     color.y > color.z * greenDominanceThreshold) {
-    //     std::cout << "Replacing light green with black: " << color.x << ", " << color.y << ", " << color.z << std::endl;
-    //     // Replace with black
-    //     color.x = 0.0f;
-    //     color.y = 0.0f;
-    //     color.z = 0.0f;
-    // }
-    // // Ensure no component exceeds 255
-    // color.x = std::min(color.x, 255.0f);
-    // color.y = std::min(color.y, 255.0f);
-    // color.z = std::min(color.z, 255.0f);
-
-    // // Ensure minimum color values to prevent pure black
-    // const float epsilon = 0.5f;  // Increased minimum value
-    // color.x = std::max(color.x, epsilon);
-    // color.y = std::max(color.y, epsilon);
-    // color.z = std::max(color.z, epsilon);
-    // std::cout << "Color: " << color.x << ", " << color.y << ", " << color.z << std::endl;
-    // check if color is close to white
+   
     if (color.x < 200 && color.y < 200 && color.z < 200) {
-    
-
         color.x *= brightnessIncrease;
         color.y *= brightnessIncrease;
         color.z *= brightnessIncrease;
