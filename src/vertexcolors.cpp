@@ -13,10 +13,11 @@ void computeVertexColorsFromTextures(
     const int material_id,
     const std::map<std::string, Texture>& textures,
     std::vector<Vec3>& vertexColors) {
+std::cout << "Normal: computeVertexColorsFromTextures" << std::endl;
 
     // static std::vector<Vec3> colorSums;
     // static std::vector<int> colorCounts;
-    // static bool firstMaterial = true;
+    static bool firstMaterial = true;
     float gamma = 1.0f / gamma_percent;
     // std::vector<Vec3> vertexNormals(attrib.vertices.size() / 3, Vec3(0, 0, 0));
 
@@ -37,12 +38,12 @@ void computeVertexColorsFromTextures(
     //         v.z /= length;
     //     }
     // };
-    // if (firstMaterial) {
-    //     // colorSums.resize(attrib.vertices.size() / 3, Vec3());
-    //     // colorCounts.resize(attrib.vertices.size() / 3, 0);
-    //     vertexColors.resize(attrib.vertices.size() / 3);
-    //     firstMaterial = false;
-    // }
+    if (firstMaterial) {
+        // colorSums.resize(attrib.vertices.size() / 3, Vec3());
+        // colorCounts.resize(attrib.vertices.size() / 3, 0);
+        vertexColors.resize(attrib.vertices.size() / 3);
+        firstMaterial = false;
+    }
 
     if (attrib.texcoords.empty()) {
         std::cout << "No texture coordinates found in the OBJ file." << std::endl;
@@ -113,14 +114,18 @@ void computeVertexColorsFromTextures(
     unsigned int texturedVertices = 0;
     for (const auto& shape : shapes) {
         for (size_t f = 0; f < shape.mesh.num_face_vertices.size(); f++) {
-                // auto textureIt = textures.find(material.diffuse_texname);
+            auto textureIt = textures.find(material.diffuse_texname);
+            // auto textureIt = textures.find(material.diffuse_texname);
+            unsigned int fv = static_cast<unsigned int>(shape.mesh.num_face_vertices[f]);
 
             if (shape.mesh.material_ids[f] != material_id) {
                 // std::cout << "Material ID mismatch: " << shape.mesh.material_ids[f] << " != " << material_id << std::endl;
                 continue;
-            }
+            } 
 
-            unsigned int fv = static_cast<unsigned int>(shape.mesh.num_face_vertices[f]);
+            const auto& texture = textureIt->second;
+
+
             for (unsigned int vert = 0; vert < fv; vert++) {
                 tinyobj::index_t idx = shape.mesh.indices[f * fv + vert];
                
@@ -130,8 +135,7 @@ void computeVertexColorsFromTextures(
                 float tex_v = attrib.texcoords[2 * idx.texcoord_index + 1];
            // Flip V coordinate
                 tex_v = 1.0f - tex_v;
-                std::string texturename = material.diffuse_texname;
-                Vec3 color = sampleTexture(textures.at(texturename), tex_u, tex_v);
+                Vec3 color = sampleTexture(texture, tex_u, tex_v);
                                 // Apply gamma correction gamma=2.2 in percentage is 0.4545 ,so to increase 10% gamma=1.1 and 
                 
                 color.x = std::pow(color.x / 255.0f, 2.2f);
@@ -146,7 +150,7 @@ void computeVertexColorsFromTextures(
                     std::cout << "idx: " << idx.vertex_index << " tex_u: " << tex_u << " tex_v: " << tex_v << std::endl;
                     std::cout << "color: " << color.x << " " << color.y << " " << color.z << std::endl;
                     std::cout << "material id: " << material_id<< material.diffuse_texname << std::endl;
-                    continue;    
+                    // continue;    
                 }
 
                 // Store offset along vertex normal

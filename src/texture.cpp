@@ -211,10 +211,7 @@ Vec3 sampleTexture(const Texture& texture, float u, float v) {
         color.y *= brightnessIncrease;
         color.z *= brightnessIncrease;
     }
-    // print color for u: 0.817245 ,v: 0.401519
-    if (u == 0.817245 && v == 0.401519) {
-        std::cout << "U and V Color: " << color.x << ", " << color.y << ", " << color.z << std::endl;
-    }
+
     return color;
 }
 

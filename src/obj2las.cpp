@@ -31,12 +31,12 @@ std::string getFileNameWithoutExtension(const std::string& filename) {
     if (lastDot == std::string::npos || lastDot < lastSlash) lastDot = filename.length();
     return filename.substr(lastSlash, lastDot - lastSlash);
 }
-std::vector<Vec3> computeVertexColorsFromTextures(
+std::vector<Vec3> computeVertexColorsFromTexturesOriginal(
     const tinyobj::attrib_t& attrib,
     const std::vector<tinyobj::shape_t>& shapes,
     const std::vector<tinyobj::material_t>& materials,
     const std::map<std::string, Texture>& textures) {
-
+std::cout << "Original: computeVertexColorsFromTexturesOriginal" << std::endl;
     std::vector<Vec3> vertexColors(attrib.vertices.size() / 3, Vec3(1, 1, 1));
     std::vector<Vec3> vertexNormals(attrib.vertices.size() / 3, Vec3(0, 0, 0));
 
@@ -155,15 +155,14 @@ std::vector<Vec3> computeVertexColorsFromTextures(
 
                 vertexColors[idx.vertex_index] = color;
                 texturedVertices++;
-                if(idx.vertex_index==405){
-                    //print all the details
-                    std::cout << "idx: " << idx.vertex_index << " tex_u: " << u << " tex_v: " << v_cord << std::endl;
-                    std::cout << "color: " << color.x << " " << color.y << " " << color.z << std::endl;
-                    std::cout << "material id: " << materialId << std::endl;
-                    // material name
-                    std::cout << "material name: " << material.diffuse_texname << std::endl;
-                    return vertexColors;
-                }
+                // if(idx.vertex_index==405){
+                //     //print all the details
+                //     std::cout << "idx: " << idx.vertex_index << " tex_u: " << u << " tex_v: " << v_cord << std::endl;
+                //     std::cout << "color: " << color.x << " " << color.y << " " << color.z << std::endl;
+                //     std::cout << "material id: " << materialId << std::endl;
+                //     // material name
+                //     std::cout << "material name: " << material.diffuse_texname << std::endl;
+                // }
 
                 // Store offset along vertex normal
                 Vec3& normal = vertexNormals[idx.vertex_index];
@@ -181,7 +180,7 @@ std::vector<Vec3> computeVertexColorsFromTextures(
 void convertObjToLas(const std::string& objFilename, const std::string& lasFilename) {
     try {
         tinyobj::ObjReaderConfig reader_config;
-        int material_id=0;
+        int material_id;
         reader_config.mtl_search_path = getParentPath(objFilename); // Path to material files
         // add time to measure the time
         auto start = std::chrono::high_resolution_clock::now();
@@ -236,38 +235,44 @@ void convertObjToLas(const std::string& objFilename, const std::string& lasFilen
 
         // Load all textures
         std::map<std::string, Texture> textures;
-        // std::map<std::string, Texture> texturesoriginal;
+        std::map<std::string, Texture> texturesoriginal;
         if(materials.size() == 0) {
             std::cout << "No materials found in the OBJ file." << std::endl;
             return;
         } 
         // print materials size
         std::cout << "Number of materials: " << materials.size() << std::endl;
+        material_id = 0;
         for (const auto& material : materials) {
             std::cout << "Material name: " << material.name << std::endl;
-
             if (!material.diffuse_texname.empty()) {
+
                 std::string texturePath = joinPaths(getParentPath(objFilename), material.diffuse_texname);
                 textures[material.diffuse_texname] = loadTexture(texturePath);
+                std::cout << "Loaded texture before func: " << material.diffuse_texname << std::endl;
             
-                // texturesoriginal[material.diffuse_texname] = textures[material.diffuse_texname];
-                computeVertexColorsFromTextures(attrib, shapes, material, material_id, textures, vertexColors);
+                texturesoriginal[material.diffuse_texname] = textures[material.diffuse_texname];
+                // computeVertexColorsFromTextures(attrib, shapes, material, material_id, textures, vertexColors);
                 // reset textures
-                textures.clear();
+                // textures.clear();
                 
                 std::cout << "Loaded texture reset: " << textures.size() << std::endl;
                 // std::cout << "Original Loaded texture reset: " << texturesoriginal.size() << std::endl;
+                    material_id++;
 
                 std::cout << "Loaded texture: " << material.diffuse_texname << std::endl;
+            
+
+        }else{
+            std::cout << "No texture found for material: " << material.name << std::endl;
             }
-            material_id++;
 
         }
 
-        std::cout << "Loaded " << textures.size() << " textures." << std::endl;
+        std::cout << "Loaded " << textures.size()<< material_id << " textures." << std::endl;
 
         // Compute vertex colors using the provided textures
-        // vertexColorsoriginal = computeVertexColorsFromTextures(attrib, shapes, materials, texturesoriginal);
+        vertexColorsoriginal = computeVertexColorsFromTexturesOriginal(attrib, shapes, materials, texturesoriginal);
         // // save original colors and vertex colors in txt files
         // exit(0);
         // std::ofstream originalcolors("originalcolors.txt");
@@ -279,9 +284,9 @@ void convertObjToLas(const std::string& objFilename, const std::string& lasFilen
         // originalcolors.close();
         // colors.close();
 
-        // std::cout << "Computed " << vertexColors.size() << " vertex colors." << std::endl;
-        // // replace vertexColors with vertexColorsoriginal
-        // vertexColors = vertexColorsoriginal;
+        std::cout << "Computed " << vertexColors.size() << " vertex colors." << std::endl;
+        // replace vertexColors with vertexColorsoriginal
+        vertexColors = vertexColorsoriginal;
 for (size_t v = 0; v < attrib.vertices.size() / 3; v++) {
     // std::cout << "Processing vertex " << v + 0 << " of " << attrib.vertices.size() / 3 << std::endl;
     // std::cout << "Processing vertex " << v + 1 << " of " << attrib.vertices.size() / 3 << std::endl;
