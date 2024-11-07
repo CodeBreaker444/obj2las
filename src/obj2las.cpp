@@ -231,11 +231,11 @@ void convertObjToLas(const std::string& objFilename, const std::string& lasFilen
             throw std::runtime_error("Failed to open LAS file for writing: " + lasFilename);
         }
     std::vector<Vec3> vertexColors(attrib.vertices.size() / 3, Vec3(1, 1, 1));
-                std::vector<Vec3> vertexColorsoriginal;
+                // std::vector<Vec3> vertexColorsoriginal;
 
         // Load all textures
         std::map<std::string, Texture> textures;
-        std::map<std::string, Texture> texturesoriginal;
+        // std::map<std::string, Texture> texturesoriginal;
         if(materials.size() == 0) {
             std::cout << "No materials found in the OBJ file." << std::endl;
             return;
@@ -251,28 +251,26 @@ void convertObjToLas(const std::string& objFilename, const std::string& lasFilen
                 textures[material.diffuse_texname] = loadTexture(texturePath);
                 std::cout << "Loaded texture before func: " << material.diffuse_texname << std::endl;
             
-                texturesoriginal[material.diffuse_texname] = textures[material.diffuse_texname];
-                // computeVertexColorsFromTextures(attrib, shapes, material, material_id, textures, vertexColors);
+                // texturesoriginal[material.diffuse_texname] = textures[material.diffuse_texname];
+                computeVertexColorsFromTextures(attrib, shapes, material, material_id, textures, vertexColors);
                 // reset textures
-                // textures.clear();
+                textures.clear();
                 
                 std::cout << "Loaded texture reset: " << textures.size() << std::endl;
                 // std::cout << "Original Loaded texture reset: " << texturesoriginal.size() << std::endl;
-                    material_id++;
 
                 std::cout << "Loaded texture: " << material.diffuse_texname << std::endl;
             
 
-        }else{
-            std::cout << "No texture found for material: " << material.name << std::endl;
-            }
+        }                    material_id++;
+
 
         }
 
         std::cout << "Loaded " << textures.size()<< material_id << " textures." << std::endl;
 
         // Compute vertex colors using the provided textures
-        vertexColorsoriginal = computeVertexColorsFromTexturesOriginal(attrib, shapes, materials, texturesoriginal);
+        // vertexColorsoriginal = computeVertexColorsFromTexturesOriginal(attrib, shapes, materials, texturesoriginal);
         // // save original colors and vertex colors in txt files
         // exit(0);
         // std::ofstream originalcolors("originalcolors.txt");
@@ -284,9 +282,9 @@ void convertObjToLas(const std::string& objFilename, const std::string& lasFilen
         // originalcolors.close();
         // colors.close();
 
-        std::cout << "Computed " << vertexColors.size() << " vertex colors." << std::endl;
+        // std::cout << "Computed " << vertexColors.size() << " vertex colors." << std::endl;
         // replace vertexColors with vertexColorsoriginal
-        vertexColors = vertexColorsoriginal;
+        // vertexColors = vertexColorsoriginal;
 for (size_t v = 0; v < attrib.vertices.size() / 3; v++) {
     // std::cout << "Processing vertex " << v + 0 << " of " << attrib.vertices.size() / 3 << std::endl;
     // std::cout << "Processing vertex " << v + 1 << " of " << attrib.vertices.size() / 3 << std::endl;

@@ -138,20 +138,21 @@ std::cout << "Normal: computeVertexColorsFromTextures" << std::endl;
                 Vec3 color = sampleTexture(texture, tex_u, tex_v);
                                 // Apply gamma correction gamma=2.2 in percentage is 0.4545 ,so to increase 10% gamma=1.1 and 
                 
-                color.x = std::pow(color.x / 255.0f, 2.2f);
-                color.y = std::pow(color.y / 255.0f, 2.2f);
-                color.z = std::pow(color.z / 255.0f, 2.2f);
+                float gamma = 1.0f / gamma_percent;
+                color.x = std::pow(color.x / 255.0f, gamma);
+                color.y = std::pow(color.y / 255.0f, gamma);
+                color.z = std::pow(color.z / 255.0f, gamma);
 
                 // colorSums[idx.vertex_index] = colorSums[idx.vertex_index] + color;
                 // colorCounts[idx.vertex_index]++;
                  vertexColors[idx.vertex_index] = color;
-                if(idx.vertex_index==405){
-                    //print all the details
-                    std::cout << "idx: " << idx.vertex_index << " tex_u: " << tex_u << " tex_v: " << tex_v << std::endl;
-                    std::cout << "color: " << color.x << " " << color.y << " " << color.z << std::endl;
-                    std::cout << "material id: " << material_id<< material.diffuse_texname << std::endl;
-                    // continue;    
-                }
+                // if(idx.vertex_index==405){
+                //     //print all the details
+                //     std::cout << "idx: " << idx.vertex_index << " tex_u: " << tex_u << " tex_v: " << tex_v << std::endl;
+                //     std::cout << "color: " << color.x << " " << color.y << " " << color.z << std::endl;
+                //     std::cout << "material id: " << material_id<< material.diffuse_texname << std::endl;
+                //     // continue;    
+                // }
 
                 // Store offset along vertex normal
                 // Vec3& normal = vertexNormals[idx.vertex_index];

@@ -80,8 +80,8 @@ Texture loadTexture(const std::string& filename) {
 
 Vec3 sampleTexture(const Texture& texture, float u, float v) {
     // Ensure u and v are in [0, 1] range
-    // u = std::fmod(u, 1.0f);
-    // v = std::fmod(v, 1.0f);
+    u = std::fmod(u, 1.0f);
+    v = std::fmod(v, 1.0f);
     if (u < 0) u += 1.0f;
     if (v < 0) v += 1.0f;
     
