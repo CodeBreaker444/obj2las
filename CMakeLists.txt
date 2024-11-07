@@ -31,6 +31,7 @@ set(HEADERS
     include/stb_image.h
     include/shiftcoords.h
     include/vertexcolors.h
+    include/exceptions.h
 )
 
 # Create the executable
