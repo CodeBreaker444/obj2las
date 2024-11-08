@@ -131,8 +131,13 @@ void convertObjToLas(const std::string& objFilename, const std::string& lasFilen
                     textures[material.diffuse_texname] = loadTexture(texturePath);
                     computeVertexColorsFromTextures(attrib, shapes, material, material_id, textures, vertexColors);
                     textures.clear();
+                                    material_id++;
+
+                }else{
+                    std::cout << "No texture found for material: " << material.name << std::endl;
+                                                        material_id++;
+
                 }
-                material_id++;
             } catch (const std::exception& e) {
                 ErrorLogger::logWarning("Failed to process material '" + material.name + "': " + e.what());
                 continue;
