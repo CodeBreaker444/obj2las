@@ -13,7 +13,7 @@
 #include <fstream>
 #include <algorithm>
 
-#define VERSION "1.0.0a"
+#define VERSION "1.1.0a"
 using namespace obj2las;
 
 // Helper functions remain the same
@@ -50,7 +50,7 @@ void convertObjToLas(const std::string& objFilename, const std::string& lasFilen
  / _ \| '_ \| | __) | |/ _` / __|
 | (_) | |_) | |/ __/| | (_| \__ \
  \___/|_.__// |_____|_|\__,_|___/
-          |__/            v1.0.0a
+          |__/            v1.1.0a
         << OBJ to LAS Converter >>
         << by: @codebreaker444 >>
         << github.com/codebreaker44/obj2las >>
