@@ -154,6 +154,8 @@ void convertObjToLas(const std::string& objFilename, const std::string& lasFilen
             float g = std::max(vertexColors[v].y, threshold);
             float b = std::max(vertexColors[v].z, threshold);
 
+            
+
             uint16_t r16 = static_cast<uint16_t>(r * 65535);
             uint16_t g16 = static_cast<uint16_t>(g * 65535);
             uint16_t b16 = static_cast<uint16_t>(b * 65535);
