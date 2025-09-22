@@ -12,6 +12,21 @@
 
 Convert 3D OBJ files to LAS point cloud format with support for materials, textures, and coordinate transformations.
 
+``` Start D3D Platform ```
+> Update: OBJ to 3d Tiles Converter is also available at : https://app.d3d.ai/free/converter/objto3dtile
+> <br>Supports Large models upto 100 GB (available for enterprise), Preserves high-texture quality.
+#### OBJ to 3D Tiles
+
+<p align="center">
+  <img src="https://github.com/CodeBreaker444/obj2las/blob/main/deepinspect3d.gif?raw=true" alt="DeepInspect 3d" width="720" heigh="480"/>
+</p>
+<p align="center">
+Online platform to render 3d models: 
+<a href="https:d3d.ai" align="center">DeepInspect 3d</a>
+</p>
+
+``` End D3D Platform```
+ 
 ## Features
 
 - Converts OBJ files to LAS-1.3 format
